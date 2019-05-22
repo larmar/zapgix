@@ -1,1 +1,1 @@
-SELECT	pg_xlog_location_diff(pg_current_xlog_location(),'0/00000000')
+SELECT	pg_wal_lsn_diff(pg_current_wal_lsn(),'0/00000000')

@@ -2,34 +2,24 @@
 Zabbix Agent - PostgreSQL
 
 # Dependencies
-## Packages
-* ksh
-* sudo
-
-### Debian/Ubuntu
-
-```
-#~ sudo apt install ksh sudo
-#~
-```
-
-### Red Hat
-
-```
-#~ sudo yum install ksh sudo
-#~
-```
+Only tested on Ubuntu 18.04 LTS and Postgresql 10
 
 # Deploy
 ## Zabbix
 
-Zabbix user has to have sudo privileges.
+Create a zabbix user in the postgresql database.
+Enable pg_buffercache for PostgreSQL
 
 ```
-#~ cat /etc/sudoers.d/user_zabbix
-# Allow the user zabbix to execute any command without password
-zabbix	ALL=(ALL:ALL) NOPASSWD:ALL
+#~ su - postgresql
+#~ createuser -s zabbix
+#~ CREATE EXTENSION pg_buffercache;
+#~ exit
 ```
+
+Needs to be superuser for wal-count to work otherwise 
+GRANT pg_read_all_stats TO zabbix;
+should be enough.
 
 Then you can run the deploy_zabbix script
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env ksh
+#!/bin/bash
 PATH=/usr/local/bin:${PATH}
 IFS_DEFAULT="${IFS}"
 
@@ -15,13 +15,6 @@ APP_VER="1.0.0"
 APP_WEB="http://www.sergiotocalini.com.ar/"
 #
 #################################################################################
-
-#################################################################################
-#
-#  Load Oracle Environment
-# -------------------------
-#
-[ -f ${APP_DIR}/${APP_NAME%.*}.conf ] && . ${APP_DIR}/${APP_NAME%.*}.conf
 
 #
 #################################################################################
@@ -99,8 +92,6 @@ while getopts "s::a:sj:uphvt:" OPTION; do
     esac
 done
 
-[[ -z "${auth_pass}" ]] && export PGPASSWORD=${auth_pass}
-
 ARGS+="-v timing=${TIMING:-off} "
 
 count=1
@@ -114,8 +105,9 @@ for arg in ${SQL_ARGS[@]}; do
 done
 
 if [[ -f "${SQL%.sql}.sql" ]]; then
-    cmd="psql -qAtX -U ${auth_user:-postgres} -f ${SQL%.sql}.sql"
-    rval=`sudo su - ${UNIXUSER:-postgres} -c "${cmd} ${ARGS} 2>/dev/null"`
+    cmd="psql -qAtX -d postgres -f ${SQL%.sql}.sql"
+    rval=`${cmd} ${ARGS} 2>/dev/null`
+    echo ${cmd} ${ARGS}
     rcode="${?}"
     if [[ ${rcode} == 0 && ${TIMING} =~ ^(on|ON|1|true|TRUE)$ ]]; then
 	rval=`echo -e "${rval}" | tail -n 1 |cut -d' ' -f2|sed 's/,/./'`
